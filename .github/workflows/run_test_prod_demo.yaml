@@ -1,0 +1,35 @@
+name: Run tests for Digy360
+
+on: 
+  workflow_dispatch:
+    inputs:
+      pipelineId:
+        description: 'The pipeline ID'  
+      requirementId:
+        description: 'The requirement ID'  
+      tags:
+        description: 'Test tags'
+      infraUserName:
+        description: 'Infrastructure/browserfarm user name'
+      infraPassword:
+        description: 'Infrastructure/browserfarm password'        
+      infraHubUrl:
+        description: 'Infrastructure/browserfarm Hub Url'        
+      commitId:
+        description: 'Commit Id'        
+        
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven to run tests for digycloud
+      run: mvn clean install -Ddigy4.commitId="${{github.event.inputs.commitId}}" -Dcucumber.filter.tags="${{github.event.inputs.tags}}" -Ddigy4.pipelineId=${{github.event.inputs.pipelineId}} -Ddigy4.requirementId=${{github.event.inputs.requirementId}} -Ddigy4.tags="${{github.event.inputs.tags}}" -Ddigy4.hubUrl=http://localhost:4443 -Ddigy4.localBrowser=false -Ddigy4.browser=chrome -Ddigy4.testType=API -Ddigy4.framework=cucumber -Ddigy4.buildId=${GITHUB_RUN_ID}${GITHUB_RUN_NUMBER} -Ddigy4.lob=product -Ddigy4.projectName=digycloud -Ddigy4.teamName=hulk -Ddigy4.suiteName=Digy360Suite -Ddigy4.moduleName=Digy360Module -Ddigy4.client_id=0c10a8a7bfa425fdfadf5316c7857581:e87e817e2011be59cd84cbdaa6ba7bfc -Ddigy4.client_secret=bb0b33c25b81fdfa4e5f422736c8a224:b3228778eaa4f90dde347df25a4693a2
